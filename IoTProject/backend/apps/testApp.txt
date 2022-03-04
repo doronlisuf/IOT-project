@@ -1,0 +1,21 @@
+{
+   "relationships":[
+   ],
+   "services":[
+      "BlinkLED",
+      "MeasureDistance",
+      "buzzer",
+      "led",
+      "MeasureDistance"
+   ],
+   "conditionals":[
+      {
+         "if" : "BlinkLED",
+         "then" : "MeasureDistance"
+      },
+      {
+         "if" : "buzzer",
+         "then" : "led"
+      }
+   ]
+}

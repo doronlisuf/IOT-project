@@ -1,0 +1,13 @@
+{
+    "relationships": [
+        "blink_led_10_SUPPORT_distance1"
+    ],
+    "services": [
+        "blink_led_10",
+        "distance1",
+        "blink_led_10"
+    ],
+    "conditionals" : [
+
+    ]
+}

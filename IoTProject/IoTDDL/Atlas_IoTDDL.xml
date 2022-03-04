@@ -1,0 +1,340 @@
+<Atlas_IoTDDL>
+	<Atlas_Thing>
+		<Descriptive_Metadata>
+			<Thing_ATID>EdwinRPI3</Thing_ATID>
+			<Thing_Name></Thing_Name>
+			<Thing_Owner></Thing_Owner>
+			<Thing_Vendor></Thing_Vendor>
+			<Thing_Model></Thing_Model>
+			<Thing_ReleaseDate>8/2020</Thing_ReleaseDate>
+			<Thing_Type></Thing_Type>
+			<Thing_OperatingSystem></Thing_OperatingSystem>
+			<Thing_ShortDescription></Thing_ShortDescription>
+			<LongDescription></LongDescription>
+			<Thing_SSID>RaspberriesVSS</Thing_SSID>
+			<Space_Coordinates></Space_Coordinates>
+			<Space_Name></Space_Name>
+			<Space_Description></Space_Description>
+			<Space_Constraints>
+				<Temperature>
+					<Lower_Bound></Lower_Bound>
+					<Upper_Bound></Upper_Bound>
+				</Temperature>
+				<Humidity>
+					<Lower_Bound></Lower_Bound>
+					<Upper_Bound></Upper_Bound>
+				</Humidity>
+				<Voltage>
+					<Lower_Bound></Lower_Bound>
+					<Upper_Bound></Upper_Bound>
+				</Voltage>
+				<Radio_Interference_Radius></Radio_Interference_Radius>
+				<Safe_Temperature_Radius></Safe_Temperature_Radius>
+			</Space_Constraints>
+		</Descriptive_Metadata>
+		<Administrative_Metadata>
+			<Network_Manager>
+				<Module></Module>
+				<Type></Type>
+				<Network_Name>MySpaceNetwork</Network_Name>
+				<Network_Passcode>MySpaceNetwork</Network_Passcode>
+				<MulticastGroup>
+					<IP>232.1.1.1</IP>
+					<Port>1235</Port>
+				</MulticastGroup>
+				<Communication_Protocol></Communication_Protocol>
+				<InterOperableCommunication>
+					<Broker>
+						<Vendor>HiveMQ</Vendor>
+						<Dashboard>http://www.mqtt-dashboard.com/</Dashboard>
+						<IP>broker.hivemq.com</IP>
+						<Port>1883</Port>
+					</Broker>
+					<Topic>
+						<Root>/Atlas</Root>
+						<Network_MQTTClient>/Network/MQTT_Client</Network_MQTTClient>
+						<Network_PrivateBroker>/Network/Private_Broker</Network_PrivateBroker>
+						<Multicast_ThingIdentity>/Multicast/Tweet_ThingIdentity</Multicast_ThingIdentity>
+						<Multicast_EntityIdentity>/Multicast/Tweet_EntityIdentity</Multicast_EntityIdentity>
+						<Multicast_API>/Multicast/API</Multicast_API>
+						<Unicast>/Unicast/Interaction</Unicast>
+					</Topic>
+				</InterOperableCommunication>
+				<OMA_DM>
+					<AccessName>Eclipse Leshan</AccessName>
+					<IP>coap://leshan.eclipseprojects.io</IP>
+					<Port>5683</Port>
+				</OMA_DM>
+			</Network_Manager>
+			<Memory_Manager>
+				<Store_Format></Store_Format>
+				<MemoryUnit_Application></MemoryUnit_Application>
+				<MemoryUnit_Knowledge></MemoryUnit_Knowledge>
+			</Memory_Manager>
+		</Administrative_Metadata>
+		<Thing_Attachment>
+
+		</Thing_Attachment>
+		<Structural_Metadata>
+			<Number_Hardware>0</Number_Hardware>
+			<Number_Software>0</Number_Software>
+			<Number_Hybrid>0</Number_Hybrid>
+			<Number_Entities>1</Number_Entities>
+		</Structural_Metadata>
+	</Atlas_Thing>
+	<Atlas_Entities>
+		<Entity_1>
+			<Descriptive_Metadata>
+				<ID>RPI3</ID>
+				<Name></Name>
+				<Owner></Owner>
+				<Vendor></Vendor>
+				<Category></Category>
+				<Type></Type>
+				<Description></Description>
+			</Descriptive_Metadata>
+			<Services>
+				<Service_1>
+					<Name>calcBPM</Name>
+					<AppCategory>Automation</AppCategory>
+					<Type>Action</Type>
+					<Keywords></Keywords>
+					<Description></Description>
+					<Contextual_Constraints>
+						<Time_Window>60seconds</Time_Window>
+						<Usage_Mode>Single</Usage_Mode>
+						<Concurrent>Yes</Concurrent>
+					</Contextual_Constraints>
+					<Temporal_Constraints>
+						<Working>
+							<StartTime>6am</StartTime>
+							<EndTime>10pm</EndTime>
+						</Working>
+						<Callable>
+							<StartTime>6:30am</StartTime>
+							<EndTime>9:30pm</EndTime>
+						</Callable>
+					</Temporal_Constraints>
+					<OutputDescription>newBPM</OutputDescription>
+					<OutputType>int</OutputType>
+					<Service_Formula><![CDATA[
+wiringPiSetupGpio();
+pinMode(16, INPUT);
+bool buttonState = false;
+bool prevButtonState = false;
+int taps = 5;
+int x = 0;
+double deltas[] = {0.0, 0.0, 0.0};
+int start = 0;
+int end = 0;
+bool first = true;
+while(taps > 0){
+    buttonState = (digitalRead(16) == HIGH);
+    if(buttonState != prevButtonState){
+        if(buttonState){
+            if(first){
+                start = micros();
+                first = false;
+                prevButtonState = buttonState;
+                taps--;
+                continue;
+            }
+            end = micros();
+            deltas[x] = (double) (end - start);
+            start = end;
+            x++;
+            taps--;
+        }
+    }
+    prevButtonState = buttonState;
+    Delay(10);
+
+}
+double sum = 0;
+for(double time : deltas){
+    sum += time;
+}
+sum = sum / 1000000.00;
+double avg = sum / 3.00;
+double bpm = (60.0) / avg;
+newBPM = (int) bpm;
+
+]]></Service_Formula>
+					<Service_NumberInputs>0</Service_NumberInputs>
+					<Service_InputTypes></Service_InputTypes>
+					<Service_InputDescriptions></Service_InputDescriptions>
+				</Service_1>
+				<Service_2>
+					<Name>BlinkLED</Name>
+					<AppCategory>Lighting</AppCategory>
+					<Type>Action</Type>
+					<Keywords></Keywords>
+					<Description></Description>
+					<Contextual_Constraints>
+						<Time_Window>30seconds</Time_Window>
+						<Usage_Mode></Usage_Mode>
+						<Concurrent></Concurrent>
+					</Contextual_Constraints>
+					<Temporal_Constraints>
+						<Working>
+							<StartTime>6am</StartTime>
+							<EndTime>10pm</EndTime>
+						</Working>
+						<Callable>
+							<StartTime>6:30am</StartTime>
+							<EndTime>9:30pm</EndTime>
+						</Callable>
+					</Temporal_Constraints>
+					<OutputDescription></OutputDescription>
+					<OutputType>void</OutputType>
+					<Service_Formula><![CDATA[
+#define LED 17
+wiringPiSetupGpio();
+pinMode(LED, INPUT);
+for(int i = 0; i < 10; i++){
+	DigitalWrite_High(17);
+	Delay(100);
+	DigitalWrite_Low(17);
+	Delay(100);
+	print_string(\"LED blink\");
+}
+]]></Service_Formula>
+					<Service_NumberInputs>0</Service_NumberInputs>
+					<Service_InputTypes></Service_InputTypes>
+					<Service_InputDescriptions></Service_InputDescriptions>
+				</Service_2>
+				<Service_3>
+					<Name>MeasureDistance</Name>
+					<AppCategory></AppCategory>
+					<Type></Type>
+					<Keywords></Keywords>
+					<Description></Description>
+					<Contextual_Constraints>
+						<Time_Window>30seconds</Time_Window>
+						<Usage_Mode></Usage_Mode>
+						<Concurrent></Concurrent>
+					</Contextual_Constraints>
+					<Temporal_Constraints>
+						<Working>
+							<StartTime>6am</StartTime>
+							<EndTime>10pm</EndTime>
+						</Working>
+						<Callable>
+							<StartTime>6:30am</StartTime>
+							<EndTime>9:30pm</EndTime>
+						</Callable>
+					</Temporal_Constraints>
+					<OutputDescription>distance1</OutputDescription>
+					<OutputType>int</OutputType>
+					<Service_Formula><![CDATA[
+#define trig 4 
+#define echo 18
+    wiringPiSetupGpio();
+    pinMode(trig, OUTPUT);
+    pinMode(echo, INPUT);
+	time_t timer;
+	time(&timer);
+
+    Delay(10);
+
+    //Output a signal
+    digitalWrite(trig, HIGH);
+    delayMicroseconds(10);
+    digitalWrite(trig, LOW);
+    unsigned int startTime;
+    unsigned int endTime;
+    while(digitalRead(echo) == LOW){
+        startTime = micros();
+    }
+    while(digitalRead(echo) == HIGH){
+        endTime = micros();
+    }
+	int diff = endTime - startTime;
+	double distance = (((double) diff / 2915.25) / 2) * 100;
+	print_value(distance);
+    distance1 = (int) distance;
+]]></Service_Formula>
+					<Service_NumberInputs>0</Service_NumberInputs>
+					<Service_InputTypes></Service_InputTypes>
+					<Service_InputDescriptions></Service_InputDescriptions>
+				</Service_3>
+				<Service_4>
+					<Name>servoSweep</Name>
+					<AppCategory>Automation</AppCategory>
+					<Type>Action</Type>
+					<Keywords></Keywords>
+					<Description></Description>
+					<Contextual_Constraints>
+						<Time_Window>60seconds</Time_Window>
+						<Usage_Mode></Usage_Mode>
+						<Concurrent></Concurrent>
+					</Contextual_Constraints>
+					<Temporal_Constraints>
+						<Working>
+							<StartTime>6am</StartTime>
+							<EndTime>10pm</EndTime>
+						</Working>
+						<Callable>
+							<StartTime>6:30am</StartTime>
+							<EndTime>9:30pm</EndTime>
+						</Callable>
+					</Temporal_Constraints>
+					<OutputDescription></OutputDescription>
+					<OutputType>void</OutputType>
+					<Service_Formula><![CDATA[
+	int SERVO_MIN_MS = 8;        
+	int SERVO_MAX_MS = 200;       
+	int servoPin = 26;       
+    int i;
+    int ms;
+    int pin = servoPin;
+    wiringPiSetupGpio();
+    pinMode(pin,PWM_OUTPUT);    
+    pwmSetMode(PWM_MODE_MS);
+    pwmSetRange(2000);
+    pwmSetClock(192);
+    for (int j = 0; j < 4; j++){
+        for(i=SERVO_MIN_MS;i<SERVO_MAX_MS;i++){  
+            ms = i;
+            
+            if(ms > SERVO_MAX_MS)
+                ms = SERVO_MAX_MS;
+            
+            if(ms < SERVO_MIN_MS)
+                ms = SERVO_MIN_MS;
+            
+            pwmWrite(pin,ms);
+            Delay(10);
+        }
+        Delay(500);
+        
+        for(i=SERVO_MAX_MS;i>SERVO_MIN_MS;i--){  
+            ms = i;
+            
+            if(ms > SERVO_MAX_MS)
+                ms = SERVO_MAX_MS;
+            
+            if(ms < SERVO_MIN_MS)
+                ms = SERVO_MIN_MS;
+            
+            pwmWrite(pin,ms);
+            Delay(10);
+        }
+        Delay(500);
+    }
+]]></Service_Formula>
+					<Service_NumberInputs>0</Service_NumberInputs>
+					<Service_InputTypes></Service_InputTypes>
+					<Service_InputDescriptions></Service_InputDescriptions>
+				</Service_4>
+				<Number_Services>4</Number_Services>
+			</Services>
+			<UnboundedService>
+				<Number_UnboundedServices>0</Number_UnboundedServices>
+			</UnboundedService>
+			<Relationships>
+				<Number_Relationships>0</Number_Relationships>
+			</Relationships>
+		</Entity_1>
+	</Atlas_Entities>
+</Atlas_IoTDDL>

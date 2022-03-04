@@ -1,0 +1,14 @@
+{
+    "relationships": [
+        "buzzer_INTERFERE_blink_led_5"
+    ],
+    "services": [
+        "buzzer",
+        "blink_led_5",
+        "blind_led_10",
+        "distance1"
+    ],
+    "conditionals" : [
+
+    ]
+}

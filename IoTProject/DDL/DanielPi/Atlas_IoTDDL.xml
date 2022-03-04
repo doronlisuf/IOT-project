@@ -1,0 +1,212 @@
+<Atlas_IoTDDL>
+	<Atlas_Thing>
+		<Descriptive_Metadata>
+			<Thing_ATID>DanielPi</Thing_ATID>
+			<Thing_Name></Thing_Name>
+			<Thing_Owner></Thing_Owner>
+			<Thing_Vendor></Thing_Vendor>
+			<Thing_Model></Thing_Model>
+			<Thing_ReleaseDate>8/2020</Thing_ReleaseDate>
+			<Thing_Type></Thing_Type>
+			<Thing_OperatingSystem></Thing_OperatingSystem>
+			<Thing_ShortDescription></Thing_ShortDescription>
+			<LongDescription></LongDescription>
+			<Thing_SSID>RaspberriesVSS</Thing_SSID>
+			<Space_Coordinates></Space_Coordinates>
+			<Space_Name></Space_Name>
+			<Space_Description></Space_Description>
+			<Space_Constraints>
+				<Temperature>
+					<Lower_Bound></Lower_Bound>
+					<Upper_Bound></Upper_Bound>
+				</Temperature>
+				<Humidity>
+					<Lower_Bound></Lower_Bound>
+					<Upper_Bound></Upper_Bound>
+				</Humidity>
+				<Voltage>
+					<Lower_Bound></Lower_Bound>
+					<Upper_Bound></Upper_Bound>
+				</Voltage>
+				<Radio_Interference_Radius></Radio_Interference_Radius>
+				<Safe_Temperature_Radius></Safe_Temperature_Radius>
+			</Space_Constraints>
+		</Descriptive_Metadata>
+		<Administrative_Metadata>
+			<Network_Manager>
+				<Module></Module>
+				<Type></Type>
+				<Network_Name>MySpaceNetwork</Network_Name>
+				<Network_Passcode>MySpaceNetwork</Network_Passcode>
+				<MulticastGroup>
+					<IP>232.1.1.1</IP>
+					<Port>1235</Port>
+				</MulticastGroup>
+				<Communication_Protocol></Communication_Protocol>
+				<InterOperableCommunication>
+					<Broker>
+						<Vendor>HiveMQ</Vendor>
+						<Dashboard>http://www.mqtt-dashboard.com/</Dashboard>
+						<IP>broker.hivemq.com</IP>
+						<Port>1883</Port>
+					</Broker>
+					<Topic>
+						<Root>/Atlas</Root>
+						<Network_MQTTClient>/Network/MQTT_Client</Network_MQTTClient>
+						<Network_PrivateBroker>/Network/Private_Broker</Network_PrivateBroker>
+						<Multicast_ThingIdentity>/Multicast/Tweet_ThingIdentity</Multicast_ThingIdentity>
+						<Multicast_EntityIdentity>/Multicast/Tweet_EntityIdentity</Multicast_EntityIdentity>
+						<Multicast_API>/Multicast/API</Multicast_API>
+						<Unicast>/Unicast/Interaction</Unicast>
+					</Topic>
+				</InterOperableCommunication>
+				<OMA_DM>
+					<AccessName>Eclipse Leshan</AccessName>
+					<IP>coap://leshan.eclipseprojects.io</IP>
+					<Port>5683</Port>
+				</OMA_DM>
+			</Network_Manager>
+			<Memory_Manager>
+				<Store_Format></Store_Format>
+				<MemoryUnit_Application></MemoryUnit_Application>
+				<MemoryUnit_Knowledge></MemoryUnit_Knowledge>
+			</Memory_Manager>
+		</Administrative_Metadata>
+		<Thing_Attachment>
+
+		</Thing_Attachment>
+		<Structural_Metadata>
+			<Number_Hardware>0</Number_Hardware>
+			<Number_Software>0</Number_Software>
+			<Number_Hybrid>0</Number_Hybrid>
+			<Number_Entities>1</Number_Entities>
+		</Structural_Metadata>
+	</Atlas_Thing>
+	<Atlas_Entities>
+		<Entity_1>
+			<Descriptive_Metadata>
+				<ID>RPi3</ID>
+				<Name></Name>
+				<Owner></Owner>
+				<Vendor></Vendor>
+				<Category></Category>
+				<Type></Type>
+				<Description></Description>
+			</Descriptive_Metadata>
+			<Services>
+				<Service_1>
+					<Name>distance3</Name>
+					<AppCategory></AppCategory>
+					<Type></Type>
+					<Keywords></Keywords>
+					<Description></Description>
+					<Contextual_Constraints>
+						<Time_Window>30seconds</Time_Window>
+						<Usage_Mode></Usage_Mode>
+						<Concurrent></Concurrent>
+					</Contextual_Constraints>
+					<Temporal_Constraints>
+						<Working>
+							<StartTime>6am</StartTime>
+							<EndTime>10pm</EndTime>
+						</Working>
+						<Callable>
+							<StartTime>6:30am</StartTime>
+							<EndTime>9:30pm</EndTime>
+						</Callable>
+					</Temporal_Constraints>
+					<OutputDescription>Output</OutputDescription>
+					<OutputType>int</OutputType>
+					<Service_Formula><![CDATA[
+#include <wiringPi.h>
+
+#define TRIG 17
+#define ECHO 27
+
+// Initialize wiringPi and allow the use of GPIO pin numbering
+wiringPiSetupGpio();
+
+// Setup the ECHO pin as input and TRIG as output
+pinMode(TRIG, OUTPUT);
+pinMode(ECHO, INPUT);
+
+// set the TRIG pin to low
+digitalWrite(TRIG, LOW);
+
+// wait for 2 ms
+delay(2);
+
+// set the TRIG pin to high
+digitalWrite(TRIG, HIGH);
+
+// delay for 0.1 ms
+delay(0.1);
+
+// set the TRIG pin to low
+digitalWrite(TRIG, LOW);
+
+// instantiate time variables
+unsigned int start_time;
+unsigned int end_time;
+
+// save start_time while ECHO is low
+while(digitalRead(ECHO) == LOW)
+    start_time = micros();
+
+// save end_time while ECHO is high
+while(digitalRead(ECHO) == HIGH)
+    end_time = micros();
+
+// calculate duration
+unsigned int dur = end_time - start_time;
+
+// set output to distance
+Output = (int)(dur / 58.2);
+]]></Service_Formula>
+					<Service_NumberInputs>0</Service_NumberInputs>
+					<Service_InputTypes></Service_InputTypes>
+					<Service_InputDescriptions></Service_InputDescriptions>
+				</Service_1>
+				<Number_Services>1</Number_Services>
+			</Services>
+			<UnboundedService>
+				<UB_1>
+					<Name>unbounded_distance</Name>
+					<Description></Description>
+					<MatchType></MatchType>
+					<MatchVendor></MatchVendor>
+					<MatchKeywords></MatchKeywords>
+					<MatchValue>70%</MatchValue>
+				</UB_1>
+				<UB_2>
+					<Name></Name>
+					<Description></Description>
+					<MatchType></MatchType>
+					<MatchVendor></MatchVendor>
+					<MatchKeywords></MatchKeywords>
+					<MatchValue>70%</MatchValue>
+				</UB_2>
+				<Number_UnboundedServices>2</Number_UnboundedServices>
+			</UnboundedService>
+			<Relationships>
+				<Relationship_1>
+					<Name>unbounded_distance_INTERFERE_distance3</Name>
+					<Establisher></Establisher>
+					<Description></Description>
+					<type>interfere</type>
+					<Input1>unbounded_distance</Input1>
+					<Input2>distance3</Input2>
+				</Relationship_1>
+				<Relationship_2>
+					<Name>unbounded_distance_DRIVE_distance3</Name>
+					<Establisher></Establisher>
+					<Description></Description>
+					<type>drive</type>
+					<Input1>unbounded_distance</Input1>
+					<Input2>distance3</Input2>
+				</Relationship_2>
+				<Number_Relationships>2</Number_Relationships>
+			</Relationships>
+		</Entity_1>
+	</Atlas_Entities>
+</Atlas_IoTDDL>
